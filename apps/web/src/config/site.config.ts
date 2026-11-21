@@ -4,11 +4,22 @@
  * Until then the site shows a clearly marked placeholder chip (see components/ui/Placeholder.tsx),
  * and `npm run build` warns if any {{TOKEN}} is still in the built pages (scripts/check-placeholders.mjs).
  */
+/**
+ * The public address of the site. Comes ONLY from NEXT_PUBLIC_SITE_URL: no domain is invented.
+ * The localhost fallback exists for `next dev` only. A production build without the variable fails (see next.config.mjs).
+ */
+function siteUrl(): string {
+  const raw = process.env.NEXT_PUBLIC_SITE_URL;
+  if (raw) return raw.replace(/\/$/, "");
+  if (process.env.NODE_ENV === "production") throw new Error("NEXT_PUBLIC_SITE_URL is required for a production build (see .env.example).");
+  return "http://localhost:3000";
+}
+
 export const site = {
   name: "Stilldesk",
   tagline: "Plan it. Sit down. Study.",
   status: "Launching soon on Android",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  url: siteUrl(),
   year: 2026,
 } as const;
 

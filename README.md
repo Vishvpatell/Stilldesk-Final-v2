@@ -1,58 +1,63 @@
-# Stilldesk website
+# Stilldesk: website + waitlist API
 
-Folder layout (your original documentation is NOT in here and is never modified):
+**Plan it. Sit down. Study.** A cinematic website (Next.js) and a waitlist backend (Express + MongoDB + Resend).
 
 ```
-stilldesk/
-  apps/web/     <- the website (Next.js). Stage 1 lives here.
-  apps/api/     <- the waitlist server (built in Stage 5, not created yet)
+Stilldesk-Final/
+  apps/web/    the website (Next.js, TypeScript, Tailwind)
+  apps/api/    the waitlist API (Express, TypeScript, Zod, Prisma + MongoDB, Resend)
+  docs/        notes: API, SECURITY, TESTING, REQUIRED-SETUP, the Phase-1 audit, and unmodified copies of your original documentation
+  .env.example every setting explained (copy parts into apps/web/.env.local and apps/api/.env)
+  DEVIATIONS.md  every place this differs from your documents (please review)
 ```
-Keep your documentation folder (`stilldesk-website-content`) somewhere separate, e.g. next to this folder.
 
-## Run the website on your computer (first time)
+## Run it on your MacBook (VS Code)
 
-You already have Node.js. Open a terminal (Terminal on Mac, PowerShell on Windows) and run these one at a time:
+**1. Unzip.** Double-click `Stilldesk-Final.zip`. Move the `Stilldesk-Final` folder somewhere you'll find it (for example Documents).
 
-1. `cd` into the folder: `cd path/to/stilldesk/apps/web`
-2. Download the website's building blocks (needs internet, takes a minute): `npm install`
-3. Start it: `npm run dev`
-4. Open http://localhost:3000 in your browser. Press Ctrl+C in the terminal to stop it.
+**2. Install Node.js** (the engine that runs the project). Go to https://nodejs.org, download the **LTS** version, install it. Check it worked: open Terminal and type `node -v`. It must show v20.9 or higher (v22 is ideal).
 
-To see it on your phone: connect the phone to the same Wi-Fi, find your computer's local address
-(e.g. 192.168.1.20) and open `http://192.168.1.20:3000` on the phone.
+**3. Install VS Code** from https://code.visualstudio.com if you don't have it. Then in VS Code: *File > Open Folder…* and choose `Stilldesk-Final`. Open its terminal: menu *Terminal > New Terminal*.
 
-Useful checks:
-- `npm run typecheck`  checks the code for mistakes
-- `npm run build`      makes the production version and warns about any leftover {{PLACEHOLDER}}
+**4. Install the project's building blocks** (needs internet, 2–5 minutes). In the terminal:
+```
+npm run install:all
+```
 
-If a command shows an error, copy the whole message to me and I will fix it.
+**5. See the website (no database needed).**
+```
+cp apps/web/.env.example apps/web/.env.local
+npm run dev:web
+```
+Open **http://localhost:3000**. Press `Ctrl + C` in the terminal to stop. Without the API running, the waitlist form tells visitors honestly that sign-ups aren't connected. That is expected at this step.
 
-## Where things are
+**6. Make the waitlist really work.** You need two free accounts (details in `docs/REQUIRED-SETUP.md`):
+- **MongoDB Atlas** (https://www.mongodb.com/atlas): create a free cluster and copy its connection string.
+- **Resend** (https://resend.com): create an API key. (For real visitors, verify your own sending domain.)
 
-| Want to change | File |
+Then:
+```
+cp apps/api/.env.example apps/api/.env
+```
+Open `apps/api/.env` in VS Code and fill in `DATABASE_URL`, `TOKEN_SECRET` (make one with `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`), and either `RESEND_API_KEY` + `EMAIL_FROM`, **or for a first test set `EMAIL_MODE=console`** (it prints the confirmation link in the terminal instead of sending an email; development only). Then:
+```
+npm --prefix apps/api run db:push
+npm run dev:api
+```
+Check **http://localhost:4000/health**: it should show `"database":"up"`. In `apps/web/.env.local` set `NEXT_PUBLIC_API_URL=http://localhost:4000`, stop and restart `npm run dev:web`, and submit the form on the website. With `EMAIL_MODE=console`, copy the confirmation link from the API terminal into your browser to complete the flow.
+
+**7. Check everything.** `npm run check` runs type-checking, linting and all tests. **8. Production build:** set `NEXT_PUBLIC_SITE_URL` to your real https domain, then `npm run build:web`. Before launch: `STRICT_PLACEHOLDERS=1 npm run build:web` fails while any unfinished legal or offer detail is still on a page.
+
+## Pages
+`/` (17 sections, scroll-driven Lamp story), `/faq`, `/feedback`, `/privacy`, `/terms`, `/data`, `/waitlist/thanks`, `/waitlist/confirmed`, `/waitlist/survey`, `/unsubscribe`, custom 404 and error pages, `/sitemap.xml`, `/robots.txt`.
+
+## Where to change things
+| Change | File |
 |---|---|
-| Colours, spacing, fonts (design tokens) | `src/app/globals.css` (top, `:root`) |
-| Placeholders (support email, legal name, early-bird offer...) | `src/config/site.config.ts` |
-| Hero lamp animation logic | `src/components/hero/useHeroScroll.ts` |
-| Lamp / desk artwork | `src/components/hero/scene-markup.ts` |
-| Header, menu, footer | `src/components/layout/` |
-| Page text for each section | `src/components/sections/` |
-| Page titles and sharing info | `src/app/layout.tsx` |
+| Colours and fonts | `apps/web/src/app/globals.css` (top) |
+| Unfinished business details | `apps/web/src/config/site.config.ts` |
+| Free vs Pro rows, prices switch | `apps/web/src/config/pricing.config.ts` |
+| Waitlist, email wording | `apps/api/src/services/` |
 
-## What is in this version (stilldesk-2)
-Home page, in story order: hero (scroll-driven lamp), the plan that disappears (with the dot-meets-lamp payoff), six-step loop (pinned on desktop),
-a day with Stilldesk, brain-dump demo, features (4 working demos + all 16), blocking demonstration (pinned on desktop), the Lamp's three states,
-promises, study together, Pro weekly report preview, Free vs Pro, private by default, roadmap, FAQ, waitlist form.
-Pages: /privacy, /terms, /data (from your documents), /faq (all questions), /waitlist/thanks, and a 404 page.
-Not built yet: /feedback, /waitlist/confirmed, /waitlist/survey, /unsubscribe (they need the API), the share image, sitemap and robots (Stage 4), the API (Stage 5).
-
-## Before you go live
-1. Fill the placeholders in `src/config/site.config.ts` (legal name, support email, early-bird offer, ...).
-2. Set `NEXT_PUBLIC_API_URL` in `.env.local` once the API exists. Until then the waitlist form honestly says sign-ups are not switched on.
-3. Read `DEVIATIONS.md` (where this version differs from your documents) and approve or change each item.
-4. Run `STRICT_PLACEHOLDERS=1 npm run build`: it fails while any {{TOKEN}} is left on a page.
-
-## Pricing: where to change things
-- `src/config/pricing.config.ts`: the Free vs Pro rows (from the approved table), the "no price yet" lines, and the proposed "Free is enough / Pro is for" copy.
-- `src/config/site.config.ts`: placeholder tokens (early-bird offer, Pro prices, cancellation terms).
-- To show prices later: set `showPrices: true` in pricing.config.ts and fill PRO_PRICE_MONTHLY / PRO_PRICE_YEARLY.
+## Honest status
+Read `docs/TESTING.md`. In short: all logic and pages were tested here (36 automated tests pass, every route checked at 4 widths), but `npm install`, the Next.js build, ESLint, `npm audit`, the live Express server, a real database and real email could not be run in my offline environment. If the first `npm run check` or `npm run dev:*` shows an error, send it to me and I'll fix it.

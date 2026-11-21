@@ -4,9 +4,8 @@ import { useScrub } from "@/hooks/useScrub";
 import { Accordion } from "@/components/ui/Accordion";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { EarlyBird } from "@/components/ui/EarlyBird";
-import { Placeholder } from "@/components/ui/Placeholder";
 import { planGroups, pricing, whyChoose } from "@/config/pricing.config";
-import { value } from "@/config/site.config";
+import { isUnresolved, value } from "@/config/site.config";
 
 // Copy: docs/03 section 11 (table, intro, footnote) and docs/04 (FAQ answers). No price is shown (docs/02).
 const FAQ = [
@@ -14,7 +13,7 @@ const FAQ = [
   { q: "How much will Pro cost?", a: "The price is not set yet. We are asking the waitlist what would feel fair for students, so we can price it sensibly. People on the waitlist get an early-bird offer and a 7-day Pro trial." },
   { q: "What is the early-bird offer?", a: <><EarlyBird lower={false} />. The exact terms are in the Terms of Service and in your confirmation email.</> },
   { q: "Will there be ads?", a: "No. Stilldesk has no ads. It is paid for by Pro." },
-  { q: "Can I cancel Pro, or get a refund?", a: <>Pro is not on sale yet, so there is nothing to cancel today. <Placeholder token="PRO_CANCELLATION_TERMS" /></> },
+  { q: "Can I cancel Pro, or get a refund?", a: <>Pro is not on sale yet, so there is nothing to cancel today.{isUnresolved("PRO_CANCELLATION_TERMS") ? "" : <> {value("PRO_CANCELLATION_TERMS")}</>}</> },
 ];
 
 const Check = () => (<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>);

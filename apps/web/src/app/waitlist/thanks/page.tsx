@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { EarlyBird } from "@/components/ui/EarlyBird";
-import { isUnresolved, placeholders, value } from "@/config/site.config";
+import { isUnresolved, value } from "@/config/site.config";
 
 export const metadata: Metadata = { title: "You’re on the list", robots: { index: false, follow: false } };
 
 // Copy: docs/05, section B.
 export default function Thanks() {
-  const mail = isUnresolved("SUPPORT_EMAIL") ? `[${placeholders.SUPPORT_EMAIL.label}]` : value("SUPPORT_EMAIL");
+  const mail = isUnresolved("SUPPORT_EMAIL") ? "" : ` Or email ${value("SUPPORT_EMAIL")}.`;
   return (
     <article className="legal thanks">
       <header className="legal-head">
@@ -20,7 +20,7 @@ export default function Thanks() {
         <li><h2>Help shape Stilldesk (optional).</h2><p>After you confirm, you can answer a short survey. It takes about a minute.</p></li>
         <li><h2>We’ll email you at launch.</h2><p>You’ll get <EarlyBird /> and a 7-day Pro trial.</p></li>
       </ol>
-      <p className="legal-date">Didn’t get it? Email {mail}.</p>
+      <p className="legal-date">Didn’t get it? Check your spam folder, or join again with the same email.{mail}</p>
       <p><Link className="link" href="/">Back to the home page</Link></p>
     </article>
   );

@@ -13,6 +13,9 @@ const STEPS = [
   { n: "06", name: "Study together", tag: "Keep each other company.", after: true, body: "Join a private room with friends, or a public topic room. You see small lit windows: who is studying right now. No chat, no rankings, no pressure." },
 ];
 const TYPED = "dbms assignment friday, physics numericals ch3 revise, buy notebook";
+// Reading time: the Focus step (the lamp lighting, then Studying / Paused / On break) gets the most scroll; Dump and Protect a bit more than the rest.
+const WEIGHTS = [1, 1, 1, 1.8, 1.2, 1];
+const TOTAL_W = WEIGHTS.reduce((a, b) => a + b, 0);
 const clamp = (x: number) => Math.max(0, Math.min(1, x));
 const ss = (a: number, b: number, x: number) => { x = clamp((x - a) / (b - a)); return x * x * (3 - 2 * x); };
 const fmt = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
@@ -30,7 +33,9 @@ export function Loop() {
         typed: el.querySelector<HTMLElement>(".typed")!, watch: el.querySelector<HTMLElement>(".watch")!, lamp: el.querySelector<SVGElement>(".u-lampsvg")!, lbl: el.querySelector<HTMLElement>(".u-state")!, chips: Array.from(el.querySelectorAll<HTMLElement>(".u-states span")), last: -1,
       };
       const c = cache.current;
-      const s = clamp((p - 0.05) / 0.9) * 6; // 0..6: which step we are in, with the fraction inside it
+      let u = clamp((p - 0.05) / 0.9) * TOTAL_W, k = 0;
+      while (k < 5 && u >= (WEIGHTS[k] as number)) { u -= WEIGHTS[k] as number; k += 1; }
+      const s = k + u / (WEIGHTS[k] as number); // 0..6: which step we are in, with the fraction inside it
       const act = Math.min(5, Math.floor(s));
       c.li.forEach((li, i) => {
         li.style.setProperty("--seg", clamp(s - i).toFixed(3));
@@ -43,13 +48,14 @@ export function Loop() {
       c.typed.textContent = TYPED.slice(0, Math.ceil(clamp(clamp(s) / 0.7) * TYPED.length));
       // Focus screen: Studying, then Paused, then Studying again, then On break (a session end starts a break)
       const f = clamp(s - 3);
-      const st = f < 0.45 ? 0 : f < 0.65 ? 2 : f < 0.82 ? 0 : 1;
+      // 0..0.3 the lamp lights up with the scroll; then Studying, Paused, Studying, On break
+      const st = f < 0.3 ? -1 : f < 0.52 ? 0 : f < 0.68 ? 2 : f < 0.84 ? 0 : 1;
       const names = ["Studying", "On break", "Paused"], keys = ["studying", "break", "paused"];
-      c.lamp.setAttribute("data-state", keys[st]);
-      c.lbl.textContent = names[st];
+      if (st < 0) c.lamp.removeAttribute("data-state"); else c.lamp.setAttribute("data-state", keys[st] as string); // before 0.3 the glow follows the scroll
+      c.lbl.textContent = st < 0 ? "Ready" : (names[st] as string);
       c.chips.forEach((x, i) => x.classList.toggle("on", i === st));
-      const active = Math.min(f, 0.45) + Math.max(0, Math.min(f, 0.82) - 0.65); // the clock stops while paused or on break
-      c.watch.textContent = fmt(Math.round((active / 0.62) * 754));
+      const active = Math.max(0, Math.min(f, 0.52) - 0.3) + Math.max(0, Math.min(f, 0.84) - 0.68); // the clock runs only while studying
+      c.watch.textContent = fmt(Math.round((active / 0.38) * 754));
     },
   });
 
@@ -109,8 +115,8 @@ export function Loop() {
               </div>
               {/* 04 Focus */}
               <div className="scr focus">
-                <LampIcon className="u-lampsvg" state="studying" />
-                <p className="u-state">Studying</p>
+                <LampIcon scene className="u-lampsvg" />
+                <p className="u-state">Ready</p>
                 <p className="watch">00:00</p>
                 <div className="u-states"><span className="on">Studying</span><span>On break</span><span>Paused</span></div>
                 <div className="u-two"><span>Pause</span><span>End session</span></div>

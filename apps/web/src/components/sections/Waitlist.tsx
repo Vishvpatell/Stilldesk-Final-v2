@@ -6,7 +6,7 @@ import { useScrub } from "@/hooks/useScrub";
 import { LampIcon } from "@/components/ui/LampIcon";
 import { EarlyBird } from "@/components/ui/EarlyBird";
 import { isUnresolved, value } from "@/config/site.config";
-import { MSG, submitWaitlist, validate, type FieldErrors } from "@/lib/waitlist";
+import { submitWaitlist, validate, waitlistFailMessage, type FieldErrors } from "@/lib/waitlist";
 
 type Status = "idle" | "submitting" | "error";
 
@@ -14,6 +14,7 @@ type Status = "idle" | "submitting" | "error";
 export function Waitlist() {
   const sec = useRef<HTMLElement>(null);
   const router = useRouter();
+  const sending = useRef(false); // hard lock: blocks a second submit in the same instant, before React re-renders
   useScrub(sec, { mode: "pass" }); // the lamp from the hero comes back and warms the form as you arrive
   const [f, setF] = useState({ name: "", email: "", consent: false, company_website: "" });
   const [errs, setErrs] = useState<FieldErrors>({});
@@ -37,12 +38,18 @@ export function Waitlist() {
       document.getElementById(Object.keys(v)[0] === "consent" ? "wl-consent" : `wl-${Object.keys(v)[0]}`)?.focus();
       return;
     }
+    if (sending.current) return;
+    sending.current = true;
     setStatus("submitting"); setFormError(null);
-    const r = await submitWaitlist(f);
-    if (r.ok) { router.push("/waitlist/thanks"); return; } // success only ever comes from a real server answer
-    setStatus("error");
-    if (r.kind === "validation") { setErrs(r.fields); setFormError(null); }
-    else setFormError(r.kind === "rate" ? MSG.rate : r.kind === "network" ? MSG.network : r.kind === "not-configured" ? MSG.notConfigured : MSG.server);
+    try {
+      const r = await submitWaitlist(f);
+      if (r.ok) { router.push("/waitlist/thanks"); return; } // success only ever comes from a real server answer
+      setStatus("error");
+      if (r.kind === "validation") { setErrs(r.fields ?? {}); setFormError(null); }
+      else setFormError(waitlistFailMessage(r.kind));
+    } finally {
+      sending.current = false;
+    }
   };
 
   const form = !isUnresolved("GOOGLE_FORM_URL") ? value("GOOGLE_FORM_URL") : null;

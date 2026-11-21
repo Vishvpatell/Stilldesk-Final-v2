@@ -11,7 +11,7 @@
 .rm .thread i{transform:none}
 
 /* ===== LOOP (pinned on desktop) ===== */
-.loop{position:relative;height:430vh;background:var(--bg);--p:0;--lit:0}
+.loop{position:relative;height:650vh;background:var(--bg);--p:0;--lit:0}
 .loop-glow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 48% 60% at 74% 52%,rgba(255,179,107,calc(.17*var(--lit))),rgba(255,179,107,0) 70%)}
 .loop-pin{position:sticky;top:0;height:100vh;height:100svh;display:flex;align-items:center;padding:calc(76px + var(--safe-top)) clamp(20px,6vw,96px) 24px}
 .loop-grid{width:100%;max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(24px,5vw,80px);align-items:center}
@@ -224,10 +224,12 @@ td.pro .pips i{background:var(--accent);opacity:calc(1 - var(--k)/var(--n)*.85);
 }
 
 /* ===== THE LAMP (shared) ===== */
-.lamp-i{display:block;width:100%;height:auto;overflow:visible}
+.lamp-i{display:block;overflow:visible}
+.lamp-i:not([x]){width:100%;height:auto} /* nested copies (inside the spark scene) are sized by their own width/height attributes */
 .lamp-i .li-light,.lamp-i .li-bulb,.lamp-i .li-rim{transition:opacity 1.2s var(--ease)}
 .lamp-i .li-light.warm{opacity:var(--g,1)}
 .lamp-i .li-light.cool{opacity:0}
+.lamp-i .li-scene{opacity:calc(.5 + .5*var(--g,1))}.lamp-i .li-book{filter:brightness(calc(.22 + .78*var(--g,1)))}
 .lamp-i .li-bulb{opacity:var(--g,1)}.lamp-i .li-rim{opacity:calc(var(--g,1)*.8)}
 .lamp-i[data-state="studying"]{--g:1}.lamp-i[data-state="break"]{--g:.5}
 .lamp-i[data-state="paused"]{--g:0}
@@ -236,27 +238,9 @@ td.pro .pips i{background:var(--accent);opacity:calc(1 - var(--k)/var(--n)*.85);
 @keyframes breathe{0%,100%{opacity:.88}50%{opacity:1}}
 .rm .lamp-i .li-light.warm{animation:none!important}
 
-/* ===== PROBLEM payoff: dot -> desk -> lamp ===== */
-.gap{--q:clamp(0,calc((var(--p) - .26)*4.2),1);--g:clamp(0,calc((var(--p) - .5)*5),1);grid-column:1/-1;margin:clamp(40px,7vw,88px) 0 0;min-height:clamp(260px,38vh,380px);display:flex;flex-direction:column;justify-content:flex-end}
-.gap-track{position:relative;height:clamp(160px,24vh,230px);display:flex;align-items:flex-end}
-.gdot{position:absolute;left:0;bottom:30px;width:14px;height:14px;border-radius:50%}
-.gdot.a{background:var(--amber-core);box-shadow:0 0 22px 4px rgba(255,179,107,.55);opacity:calc(1 - var(--q)*.35)}
-.gline{position:absolute;left:24px;right:clamp(140px,22vw,260px);bottom:36px;height:1px;background:repeating-linear-gradient(90deg,#4a4a50 0 6px,transparent 6px 14px)}
-.gline i{position:absolute;inset:-1px 0;background:repeating-linear-gradient(90deg,var(--amber) 0 6px,transparent 6px 14px);transform-origin:left;transform:scaleX(var(--q));filter:drop-shadow(0 0 4px rgba(255,179,107,.8))}
-.gmote{position:absolute;bottom:32px;width:9px;height:9px;border-radius:50%;background:var(--amber-core);box-shadow:0 0 16px 4px rgba(255,179,107,.7);left:calc(24px + var(--q)*(100% - 24px - clamp(140px,22vw,260px)) - 4px);opacity:clamp(0,calc(1 - (var(--q) - .94)*16),1)}
-.gdesk{position:absolute;right:0;bottom:0;width:clamp(180px,26vw,300px);aspect-ratio:1.15}
-.gdesk::after{content:"";position:absolute;left:-10%;right:-10%;bottom:0;height:3px;background:#26262B;border-radius:2px}
-.gpool{position:absolute;left:12%;right:-6%;bottom:-6px;height:40%;background:radial-gradient(ellipse at 50% 70%,rgba(255,179,107,.5),rgba(255,179,107,0) 70%);opacity:var(--g)}
-.gap-lamp{position:absolute;left:0;bottom:2px;width:78%}
-.gap-lamp .li-light.warm{opacity:var(--g)}.gap-lamp .li-bulb{opacity:var(--g)}.gap-lamp .li-rim{opacity:calc(var(--g)*.8)}
-.gbook{position:absolute;right:2%;bottom:3px;width:44%;opacity:calc(.22 + .78*var(--g));filter:brightness(calc(.5 + .5*var(--g)))}
-.gap-msg{margin-top:26px;font-size:clamp(1.3rem,2.6vw,2rem);font-weight:600;letter-spacing:-.02em;color:var(--text);opacity:clamp(0,calc((var(--p) - .6)*7),1);transform:translateY(calc((1 - clamp(0,(var(--p) - .6)*7,1))*14px))}
-.problem .closing{margin-top:14px;color:var(--amber-core)}
-.rm .gap{--q:1;--g:1}.rm .gap-msg{opacity:1;transform:none}
-.no-js .gap{--q:1;--g:1}
-
 /* phone focus screen: lamp + three labelled states */
-.u-lampsvg{width:150px;margin-bottom:-6px}
+.u-lampsvg{width:112%;max-width:none;margin:-8px -6% -2px}
+.scr.focus{--g:clamp(0,calc((var(--t3) - .04)*3.6),1);gap:8px}
 .u-states{display:flex;gap:6px;font-size:.62rem}
 .u-states span{padding:5px 9px;border-radius:99px;border:1px solid #2e2e35;color:var(--muted);transition:all .5s var(--ease)}
 .u-states span.on{color:var(--text);border-color:var(--accent);background:rgba(132,151,184,.16)}
@@ -348,7 +332,7 @@ td.pro .pips i{background:var(--accent);opacity:calc(1 - var(--k)/var(--n)*.85);
 @media(max-width:560px){.ft-grid{grid-template-columns:1fr}}
 
 /* ===== BLOCKING: pinned demonstration (desktop) ===== */
-.blk{position:relative;height:340vh;background:var(--bg);--b:0}
+.blk{position:relative;height:430vh;background:var(--bg);--b:0}
 .blk-pin{position:sticky;top:0;height:100vh;height:100svh;display:flex;align-items:center;padding:calc(76px + var(--safe-top)) clamp(20px,6vw,96px) 24px}
 .blk-grid{width:100%;max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(24px,5vw,80px);align-items:center}
 .blk .sec-h{font-size:clamp(1.6rem,2.8vw,2.5rem)}
@@ -489,3 +473,58 @@ td.pro .pips i{background:var(--accent);opacity:calc(1 - var(--k)/var(--n)*.85);
 
 /* decorative glows may extend past the screen edge; never let them create sideways scrolling (clip, not hidden, so sticky scenes still work) */
 main{overflow-x:clip}
+
+/* ===== FORM PAGES (feedback, survey, unsubscribe) ===== */
+.fp{--g:.5}
+.legal .wl-card{margin-top:8px}
+.wl-card textarea{width:100%;padding:14px 18px;border-radius:16px;border:1px solid #3a3d4a;background:#0b0c10;color:var(--text);font:400 1.05rem/1.5 var(--font);resize:vertical;transition:border-color .3s,box-shadow .3s}
+.wl-card textarea:focus-visible{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px rgba(132,151,184,.22)}
+.wl-card textarea[aria-invalid=true]{border-color:#d98a7a}
+.wl-help{font-size:.85rem;color:var(--muted)}.opt-tag{color:var(--muted);font-weight:400}
+.wl-card.done h2{font-size:1.5rem;margin-bottom:6px}.wl-card.done p{color:#d9d4ca}
+.survey .q{border:0;padding:0;margin:0;display:grid;gap:10px}.survey legend{font-weight:600;margin-bottom:10px;padding:0}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{position:relative;cursor:pointer}.opt input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.opt span{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:99px;border:1px solid #3a3d4a;background:#0b0c10;color:#d9d4ca;transition:all .3s var(--ease)}
+.opt:hover span{border-color:var(--accent)}.opt input:checked+span{background:rgba(132,151,184,.24);border-color:var(--accent);color:var(--text)}
+.opt input:focus-visible+span{box-shadow:0 0 0 4px rgba(132,151,184,.3);border-color:var(--accent)}
+
+/* ===== AUDIT FIXES: contrast, tap targets, offscreen pause ===== */
+/* paused when their section is off screen (class set by MotionRoot) or the hero is off screen */
+main section.off *,main section.off *::before,main section.off *::after,.stage.paused *{animation-play-state:paused!important}
+/* waitlist button: no endless decorative sheen (kept: the one-time sheen on the pricing button) */
+.wl-btn::after{display:none}
+/* dimmed scroll states keep text at 4.5:1 or better: dim with a gentler floor, not near-invisible */
+.step{opacity:.8}.step.past{opacity:.9}
+.moment{opacity:calc(.68 + .32*var(--c,1))}
+.pitem{opacity:calc(.78 + .22*var(--on))}
+.pn{color:color-mix(in srgb,var(--amber) calc(var(--on)*100%),#8d8a84)}
+.stag{color:#b9b4ab}
+/* touch targets: at least 44x44 */
+.brand{min-height:44px}
+.link{display:inline-flex;align-items:center;min-height:44px}
+.footer li a{padding:12px 0;min-height:44px}
+.u-seg.wide button,.dm-chips button,.cl-btns button{min-height:44px}
+.bd-time button{position:relative}
+.bd-time button::before{content:"";position:absolute;inset:-7px}
+.ft-tabs button,.opt span{min-height:44px}
+nav.links a{padding:12px 4px}
+@media(max-width:900px){.moment,.pitem{opacity:1}}
+.rm .moment,.rm .pitem,.no-js .moment,.no-js .pitem{opacity:1}
+
+/* ===== SPARK: energy point -> lamp -> light on the desk (pinned on desktop) ===== */
+.spark{position:relative;height:340vh;background:var(--bg);--p:0;--g:0;--pulse:0;--msg:0;--close:0}
+.spark-pin{position:sticky;top:0;height:100vh;height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(10px,2.5vh,28px);padding:calc(72px + var(--safe-top)) clamp(16px,5vw,64px) 20px;overflow:clip}
+.spark-pin::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 52% 55% at 38% 58%,rgba(255,179,107,calc(.22*var(--g))),rgba(255,179,107,0) 70%)}
+.spark-svg{position:relative;width:min(100%,124svh);height:auto;aspect-ratio:2/1;overflow:visible}
+.spark-copy{position:relative;text-align:center;display:grid;gap:8px;min-height:7.5em;align-content:start}
+.sp-msg{font-size:clamp(1.5rem,3.2vw,2.6rem);font-weight:700;letter-spacing:-.03em;opacity:var(--msg);transform:translateY(calc((1 - var(--msg))*18px))}
+.sp-close{font-size:clamp(1.15rem,2.2vw,1.8rem);font-weight:600;letter-spacing:-.02em;color:var(--amber-core);opacity:var(--close);transform:translateY(calc((1 - var(--close))*12px))}
+.sp-pulse{stroke:var(--amber-core);stroke-width:2;transform-origin:446px 300px;transform:scale(calc(.25 + var(--pulse)*3.4));opacity:calc((1 - var(--pulse))*clamp(0,var(--pulse)*30,1))}
+.sp-flash{opacity:clamp(0,calc(1 - max(var(--pulse) - .22,.22 - var(--pulse))*4.5),1)}
+@media(max-width:900px){.spark{height:auto}.spark-pin{position:relative;height:auto;padding:56px 12px 64px}.spark-svg{width:100%}}
+.no-js .spark,.rm .spark{height:auto;--g:1;--pulse:1;--msg:1;--close:1}.no-js .spark-pin,.rm .spark-pin{position:relative;height:auto;padding-top:80px;padding-bottom:80px}
+.rm .sp-point,.rm .sp-trail,.rm .sp-flash,.rm .sp-pulse{display:none}
+
+@media(max-width:900px){.bd-time button{width:44px;height:44px}}
+nav.links a{min-width:44px;text-align:center}

@@ -1,0 +1,42 @@
+// Waitlist database schema (MongoDB). Source: docs/12 starter schema.
+// DEVIATION (see DEVIATIONS.md): `name` is REQUIRED here because the website form requires it.
+// Use `npm run db:push` (migrations are not used with MongoDB). MongoDB Atlas needs a replica set (Atlas has one).
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model WaitlistEntry {
+  id                    String    @id @default(auto()) @map("_id") @db.ObjectId
+  email                 String    @unique
+  name                  String
+  source                String?
+  consent               Boolean
+  consentAt             DateTime
+  consentTextVersion    String
+  confirmTokenHash      String?
+  confirmTokenExpiresAt DateTime?
+  confirmedAt           DateTime?
+  unsubscribedAt        DateTime?
+  survey                Json?
+  betaOptIn             Boolean?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([confirmedAt])
+  @@index([createdAt])
+  @@index([confirmTokenHash])
+}
+
+model Feedback {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  message   String
+  contact   String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}

@@ -42,6 +42,8 @@ export function Header() {
   useEffect(() => {
     if (!open) return;
     closeBtn.current?.focus();
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden"; // background must not scroll under the menu
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") { setOpen(false); openBtn.current?.focus(); }
       if (e.key === "Tab" && menu.current) {
@@ -52,7 +54,7 @@ export function Header() {
       }
     };
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = prev; };
   }, [open]);
 
   return (

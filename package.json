@@ -1,0 +1,16 @@
+{
+  "name": "stilldesk",
+  "private": true,
+  "description": "Stilldesk: website (apps/web) and waitlist API (apps/api)",
+  "scripts": {
+    "install:all": "npm --prefix apps/web install && npm --prefix apps/api install",
+    "dev:web": "npm --prefix apps/web run dev",
+    "dev:api": "npm --prefix apps/api run dev",
+    "build:web": "npm --prefix apps/web run build",
+    "build:api": "npm --prefix apps/api run build",
+    "test": "npm --prefix apps/api test && npm --prefix apps/web test",
+    "typecheck": "npm --prefix apps/api run typecheck && npm --prefix apps/web run typecheck",
+    "lint": "npm --prefix apps/web run lint",
+    "check": "npm run typecheck && npm run lint && npm test"
+  }
+}

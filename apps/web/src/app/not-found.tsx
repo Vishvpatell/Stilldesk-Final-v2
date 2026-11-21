@@ -9,10 +9,10 @@ export default function NotFound() {
     <article className="legal thanks nf">
       <header className="legal-head">
         <div className="thanks-lamp off" aria-hidden="true"><span /></div>
-        <h1>This page isn’t here.</h1>
-        <p className="lead">The lamp is off in this room. Let’s go back to the desk.</p>
+        <h1>This page is off.</h1>
+        <p className="lead">The lamp is dim here. Let’s get you back to somewhere lit.</p>
       </header>
-      <p><ButtonLink href="/">Back to the home page</ButtonLink> <Link className="link" href="/#loop" style={{ marginLeft: 18 }}>See how it works</Link></p>
+      <p><ButtonLink href="/">Go to the home page</ButtonLink> <Link className="link" href="/#loop" style={{ marginLeft: 18 }}>See how it works</Link></p>
     </article>
   );
 }

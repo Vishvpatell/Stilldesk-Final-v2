@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { isUnresolved, site, value } from "@/config/site.config";
 
-// Columns and wording from docs/02-sitemap-and-page-specs.md. /feedback is not linked until its API exists (Stage 5).
+// Columns and wording from docs/02-sitemap-and-page-specs.md. All footer links point to real pages.
 const cols = [
   { title: "Product", links: [
     ["How it works", "/#loop"], ["Features", "/#features"], ["Study together", "/#together"],
     ["Free vs Pro", "/#plans"], ["Join the waitlist", "/#waitlist"] ] },
   { title: "Company", links: [
-    ["Why Stilldesk", "/#problem"], ["Help and FAQ", "/faq"] ] },
+    ["Why Stilldesk", "/#problem"], ["Help and FAQ", "/faq"], ["Send feedback", "/feedback"] ] },
   { title: "Legal", links: [["Privacy", "/privacy"], ["Terms", "/terms"], ["Data and Privacy", "/data"]] },
 ];
 

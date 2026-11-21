@@ -18,9 +18,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: { default: title, template: `%s | ${site.name}` }, // docs/07: "Help and FAQ | Stilldesk" etc.
   description,
-  alternates: { canonical: "/" },
   openGraph: { type: "website", siteName: site.name, title, description, url: "/" },
-  // Open Graph image + Twitter card are added in Stage 4 together with the 1200x630 share image.
+  twitter: { card: "summary_large_image", title, description },
+  // Share images come from app/opengraph-image.png and app/twitter-image.png (Next adds the tags). Each page sets its own canonical.
 };
 
 export const viewport: Viewport = {

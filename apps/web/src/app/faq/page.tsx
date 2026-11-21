@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Accordion } from "@/components/ui/Accordion";
 import { Markdown } from "@/lib/markdown";
 import { parseFaq } from "@/lib/content";
 import { isUnresolved, placeholders, value } from "@/config/site.config";
+import { JsonLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
   title: "Help and FAQ",
@@ -26,7 +28,7 @@ export default function FaqPage() {
         <p className="eyebrow">Stilldesk</p>
         <h1>Help and FAQ</h1>
         <p className="legal-date">Last updated: November 15, 2026</p>
-        <p className="lead">The questions we get asked most. If yours isn’t here, email <a href={isUnresolved("SUPPORT_EMAIL") ? undefined : `mailto:${value("SUPPORT_EMAIL")}`}>{isUnresolved("SUPPORT_EMAIL") ? `[${placeholders.SUPPORT_EMAIL.label}]` : value("SUPPORT_EMAIL")}</a>.</p>
+        <p className="lead">The questions we get asked most.{isUnresolved("SUPPORT_EMAIL") ? <> If yours isn’t here, use the <Link href="/feedback">feedback page</Link>.</> : <> If yours isn’t here, email <a href={`mailto:${value("SUPPORT_EMAIL")}`}>{value("SUPPORT_EMAIL")}</a>.</>}</p>
       </header>
       {groups.map((g) => (
         <section key={g.title} className="faq-group">
@@ -34,7 +36,7 @@ export default function FaqPage() {
           <Accordion items={g.items.map((i) => ({ q: i.q, a: <Markdown source={i.a} startLevel={4} /> }))} />
         </section>
       ))}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <JsonLd data={jsonLd} />
     </article>
   );
 }

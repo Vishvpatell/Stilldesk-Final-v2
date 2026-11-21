@@ -76,7 +76,8 @@ export function useHeroScroll(stageRef: RefObject<HTMLElement | null>) {
       const intro = rm ? 1 : clamp(iv + 0.07 * Math.sin(iv * 20) * (1 - iv)); // tiny bulb flicker as it warms up
       const l = rm ? 1 : clamp(intro * 0.14 + 0.86 * ss(0, 0.5, p));
       const sp = rm ? 1 : clamp(0.34 + 0.66 * ss(0.1, 0.82, p));
-      const ex = ss(0.86, 1, p), tf = ss(0.42, 0.7, p);
+      // reduced motion shows the static, fully lit scene WITH the headline: never fade the text out or exit the scene
+      const ex = rm ? 0 : ss(0.86, 1, p), tf = rm ? 0 : ss(0.42, 0.7, p);
       const br = !rm && p > 0.55 ? 1 + 0.045 * Math.sin((t / 6000) * 2 * Math.PI) + 0.012 * Math.sin(t / 1700) : 1; // glow-only breath
       const key = [p, l, sp, ex, tf, br].map((n) => n.toFixed(4)).join();
       if (key === last) return;
@@ -111,8 +112,9 @@ export function useHeroScroll(stageRef: RefObject<HTMLElement | null>) {
       lbl.textContent = l > 0.2 ? "Studying" : "Ready"; // the lamp always comes with words, never colour alone
     };
 
-    let raf = 0, prevT = performance.now();
+    let raf = 0, prevT = performance.now(), visible = true;
     const tick = (t: number) => {
+      raf = 0;
       if (!rm) {
         // time-based smoothing: same feel at 30, 60 or 120 fps, and it always settles exactly on the target
         const k = 1 - Math.exp(-Math.min(0.1, (t - prevT) / 1000) * 9);
@@ -129,16 +131,23 @@ export function useHeroScroll(stageRef: RefObject<HTMLElement | null>) {
         o.el.setAttribute("cy", o.y.toFixed(1));
         o.el.setAttribute("opacity", (0.2 + 0.55 * Math.abs(Math.sin(t / 1500 + o.ph))).toFixed(2));
       }
-      raf = requestAnimationFrame(tick);
+      // keep drawing only while the hero is on screen (or still easing to its target); otherwise sleep until scrolled back
+      if (visible || Math.abs(progress() - cur) > 0.0004) raf = requestAnimationFrame(tick);
     };
+    const wake = () => { if (!raf && !rm) { prevT = performance.now(); raf = requestAnimationFrame(tick); } };
+    const io = new IntersectionObserver(([e]) => { visible = !!e?.isIntersecting; stage.classList.toggle("paused", !visible); if (visible) wake(); }, { rootMargin: "100px 0px" });
+    io.observe(stage);
 
     layout();
     addEventListener("resize", layout);
+    addEventListener("scroll", wake, { passive: true });
     if (rm) render(performance.now());
     else raf = requestAnimationFrame(tick);
 
     return () => {
       cancelAnimationFrame(raf);
+      io.disconnect();
+      removeEventListener("scroll", wake);
       removeEventListener("resize", layout);
       dust.forEach((o) => o.el.remove());
     };
