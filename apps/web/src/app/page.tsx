@@ -4,6 +4,7 @@ import { Spark } from "@/components/sections/Spark";
 import { Loop } from "@/components/sections/Loop";
 import { Day } from "@/components/sections/Day";
 import { BrainDump } from "@/components/sections/BrainDump";
+import { DayPlanner } from "@/components/sections/DayPlanner";
 import { Features } from "@/components/sections/Features";
 import { Blocking } from "@/components/sections/Blocking";
 import { LampStates } from "@/components/sections/LampStates";
@@ -42,6 +43,7 @@ export default function Home() {
       <Thread height="18vh" />
       <Day />
       <BrainDump />
+      <DayPlanner />
       <Features />
       <Blocking />
       <LampStates />

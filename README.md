@@ -6,7 +6,8 @@
 Stilldesk-Final/
   apps/web/    the website (Next.js, TypeScript, Tailwind)
   apps/api/    the waitlist API (Express, TypeScript, Zod, Prisma + MongoDB, Resend)
-  docs/        notes: API, SECURITY, TESTING, REQUIRED-SETUP, the Phase-1 audit, and unmodified copies of your original documentation
+  docs/        STILLDESK-COMPLETE-REPORT (.md and .pdf: everything about the app, website, backend and project), API, SECURITY, TESTING,
+               REQUIRED-SETUP, the Phase-1 audit, and unmodified copies of your original documentation
   .env.example every setting explained (copy parts into apps/web/.env.local and apps/api/.env)
   DEVIATIONS.md  every place this differs from your documents (please review)
 ```
@@ -49,7 +50,7 @@ Check **http://localhost:4000/health**: it should show `"database":"up"`. In `ap
 **7. Check everything.** `npm run check` runs type-checking, linting and all tests. **8. Production build:** set `NEXT_PUBLIC_SITE_URL` to your real https domain, then `npm run build:web`. Before launch: `STRICT_PLACEHOLDERS=1 npm run build:web` fails while any unfinished legal or offer detail is still on a page.
 
 ## Pages
-`/` (17 sections, scroll-driven Lamp story), `/faq`, `/feedback`, `/privacy`, `/terms`, `/data`, `/waitlist/thanks`, `/waitlist/confirmed`, `/waitlist/survey`, `/unsubscribe`, custom 404 and error pages, `/sitemap.xml`, `/robots.txt`.
+`/` (18 sections, scroll-driven Lamp story, including the interactive Day planner), `/faq`, `/feedback`, `/privacy`, `/terms`, `/data`, `/waitlist/thanks`, `/waitlist/confirmed`, `/waitlist/survey`, `/unsubscribe`, custom 404 and error pages, `/sitemap.xml`, `/robots.txt`.
 
 ## Where to change things
 | Change | File |
@@ -60,4 +61,4 @@ Check **http://localhost:4000/health**: it should show `"database":"up"`. In `ap
 | Waitlist, email wording | `apps/api/src/services/` |
 
 ## Honest status
-Read `docs/TESTING.md`. In short: all logic and pages were tested here (36 automated tests pass, every route checked at 4 widths), but `npm install`, the Next.js build, ESLint, `npm audit`, the live Express server, a real database and real email could not be run in my offline environment. If the first `npm run check` or `npm run dev:*` shows an error, send it to me and I'll fix it.
+Read `docs/TESTING.md`. In short: all logic and pages were tested here (43 automated tests pass, every route checked at 4 widths), but `npm install`, the Next.js build, ESLint, `npm audit`, the live Express server, a real database and real email could not be run in my offline environment. If the first `npm run check` or `npm run dev:*` shows an error, send it to me and I'll fix it.

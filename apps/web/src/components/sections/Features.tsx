@@ -6,6 +6,7 @@ import { LampIcon, type LampState } from "@/components/ui/LampIcon";
 const CARDS: [string, "At launch" | "After launch", string][] = [
   ["Brain-dump bar", "At launch", "One blank bar. Write anything. AI sorts it into tasks."],
   ["Subjects, with colours", "At launch", "Drag a task to another subject any time. Stilldesk learns from your corrections on your phone."],
+  ["Day planner", "At launch", "Put each task into a time block, from this time to that time. Move it whenever plans change."],
   ["Today screen", "At launch", "Only today’s plan. Swipe “not today” to move a task to tomorrow with no penalty."],
   ["Arrival prompt", "At launch", "One notification when you reach your room, by Wi-Fi, location, a time, or a button. Location is optional."],
   ["Study sessions", "At launch", "Stopwatch by default, timers of 15, 25 or 45 minutes, and a 90-minute deep work mode."],

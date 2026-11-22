@@ -6,7 +6,8 @@ Test environment: a Linux sandbox with Node 22, Chromium (Playwright) and zod. I
 | Check | Result |
 |---|---|
 | API unit/integration tests (`apps/api/test`, node:test + real Zod) | 25 / 25 pass |
-| Website unit tests (`apps/web/test`): API client incl. timeout, form validation, security headers, site-URL rule, placeholder checker | 11 / 11 pass |
+| Website unit tests (`apps/web/test`): API client incl. timeout, form validation, security headers, site-URL rule, placeholder checker, **Day planner logic** | 18 / 18 pass |
+| **Day planner in a browser**: mouse drag, edge resize, overlap refusal, keyboard (arrows, Shift+arrows), Earlier/Later/Shorter/Longer/Remove buttons, add task, reset, scroll-driven "now" line (also in reverse), 4 widths, 44 px targets, reduced motion | all pass |
 | API core strict TypeScript (`strict`, `noUncheckedIndexedAccess`, no unused code) | 0 errors |
 | Every website TS/TSX file transpiles; the whole homepage bundles | 0 failures |
 | API Express/Prisma/Resend glue files parse | all parse (NOT executed) |
@@ -28,3 +29,7 @@ Test environment: a Linux sandbox with Node 22, Chromium (Playwright) and zod. I
 
 ## How to run everything yourself
 `npm run install:all` then `npm run check` (types + lint + all tests). If anything fails the first time, copy the message to me and I'll fix it.
+
+## Known, deliberate limits (not bugs)
+- **Touch-target size (44 px):** every button and link meets it, with these exceptions: the 15-minute blocks in the Day planner are only about 20 px tall (a 15-minute slot cannot be 44 px at this scale; the Earlier / Later / Shorter / Longer / Remove buttons below the planner are 44 px and do the same job, and blocks are also keyboard-operable); the weekday bars in the Pro report preview are informational and 31 px wide on a phone; the small minus/plus buttons beside brain-dump times are 30 px on desktop with a 44 px invisible hit area (and a real 44 px on phones); inline text links inside sentences (for example "Privacy Policy" in the consent line) follow normal text-link sizing.
+- Mouse dragging in the planner skips over positions that would overlap another block, so a fast drag can jump past a short block; the block never overlaps.

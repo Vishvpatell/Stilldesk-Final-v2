@@ -46,7 +46,7 @@ export function Plans() {
             <p className="pk">Free</p>
             <h3>The core promise, free for good.</h3>
             <ul>
-              <li>Brain-dump bar, 10 a day</li><li>Arrival prompt</li><li>Stopwatch, timer, deep work</li><li>Blocking for a few apps</li><li>Streaks and basic stats</li>
+              <li>Brain-dump bar, 10 a day</li><li>Day planner with time blocks</li><li>Arrival prompt</li><li>Stopwatch, timer, deep work</li><li>Blocking for a few apps</li><li>Streaks and basic stats</li>
             </ul>
             <ButtonLink href="/#waitlist" variant="ghost">Join the waitlist</ButtonLink>
           </article>

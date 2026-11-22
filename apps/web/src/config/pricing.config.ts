@@ -19,6 +19,7 @@ export const planGroups: PlanGroup[] = [
   { title: "Plan", rows: [
     { label: "First-open setup and subjects", free: "Yes", pro: "Yes", same: true },
     { label: "Brain-dump bar (AI)", free: "10 a day", pro: "Unlimited", meter: true },
+    { label: "Day planner (time blocks)", free: "Yes", pro: "Yes", same: true },
     { label: "Today screen and tasks", free: "Yes", pro: "Yes", same: true },
   ] },
   { title: "Study", rows: [
