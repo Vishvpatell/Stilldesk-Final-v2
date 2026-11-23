@@ -1,6 +1,7 @@
 "use client";
 import { useRef } from "react";
 import { useScrub } from "@/hooks/useScrub";
+import { useSceneNodes } from "@/hooks/useSceneNodes";
 import { LampIcon } from "@/components/ui/LampIcon";
 
 // Copy: docs/03-landing-page-copy.md, section 3 (typographic quotes only).
@@ -22,17 +23,17 @@ const fmt = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${Str
 
 export function Loop() {
   const ref = useRef<HTMLElement>(null);
-  const cache = useRef<{ li: HTMLElement[]; scr: HTMLElement[]; typed: HTMLElement; watch: HTMLElement; lamp: SVGElement; lbl: HTMLElement; chips: HTMLElement[]; last: number } | null>(null);
+  const getNodes = useSceneNodes((root) => {
+    const li = Array.from(root.querySelectorAll<HTMLElement>(".step")), scr = Array.from(root.querySelectorAll<HTMLElement>(".scr")), chips = Array.from(root.querySelectorAll<HTMLElement>(".u-states span"));
+    const typed = root.querySelector<HTMLElement>(".typed"), watch = root.querySelector<HTMLElement>(".watch"), lamp = root.querySelector<SVGElement>(".u-lampsvg"), lbl = root.querySelector<HTMLElement>(".u-state");
+    return li.length === STEPS.length && scr.length === STEPS.length && typed && watch && lamp && lbl ? { li, scr, chips, typed, watch, lamp, lbl, last: -1 } : null;
+  });
 
   useScrub(ref, {
     mode: "pin",
-    onUpdate: (p) => {
-      const el = ref.current!;
-      if (!cache.current) cache.current = {
-        li: Array.from(el.querySelectorAll<HTMLElement>(".step")), scr: Array.from(el.querySelectorAll<HTMLElement>(".scr")),
-        typed: el.querySelector<HTMLElement>(".typed")!, watch: el.querySelector<HTMLElement>(".watch")!, lamp: el.querySelector<SVGElement>(".u-lampsvg")!, lbl: el.querySelector<HTMLElement>(".u-state")!, chips: Array.from(el.querySelectorAll<HTMLElement>(".u-states span")), last: -1,
-      };
-      const c = cache.current;
+    onUpdate: (p, el) => {
+      const c = getNodes(el);
+      if (!c) return;
       let u = clamp((p - 0.05) / 0.9) * TOTAL_W, k = 0;
       while (k < 5 && u >= (WEIGHTS[k] as number)) { u -= WEIGHTS[k] as number; k += 1; }
       const s = k + u / (WEIGHTS[k] as number); // 0..6: which step we are in, with the fraction inside it

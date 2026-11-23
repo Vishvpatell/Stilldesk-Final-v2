@@ -20,6 +20,14 @@ Test environment: a Linux sandbox with Node 22, Chromium (Playwright) and zod. I
 | Spark scene and phone lamp scroll behaviour | value tracks scroll, holds exactly when scrolling stops, returns to 0 when scrolled back |
 | Contrast of dimmed scroll states | 6.4:1 or better (target 4.5:1) |
 
+## v2 fix: runtime errors "Cannot read properties of null (reading 'style' / 'dataset')"
+| Check | Result |
+|---|---|
+| Stress test on the OLD code: page removed and restored 192 times while scenes animate, scroll events during removal | **43 runtime errors** (29x `reading 'style'`, 14x `reading 'dataset'`): the bug reproduced exactly |
+| Same stress test on the FIXED code: desktop 1440, phone 375 (touch), reduced motion (192 cycles each, 576 total) | **0 errors**; the lamp scene still animates correctly afterwards |
+| Scroll behaviour at 1440, 1280, 768, 375 and reduced motion: slow scroll to the bottom, 60 fast random jumps, stop mid-scene (values hold exactly), scroll back to the top (spark glow 0, loop step 0, blocking step 0), 3 refreshes | all pass, 0 errors |
+| Unit tests after the fix: API 25/25, website 18/18; API strict types 0 errors; no unused imports; every file transpiles | pass |
+
 ## NOT RUN (cannot be, offline). First-run risk: these may show issues the first time you run them
 - `npm install`, `npm run build` (Next.js production build), `npm run lint` (ESLint), `npm run typecheck` for the website (needs the React/Next type packages) and for the API glue files.
 - `npm audit` (dependency vulnerabilities).

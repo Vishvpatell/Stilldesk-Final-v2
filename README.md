@@ -60,5 +60,12 @@ Check **http://localhost:4000/health**: it should show `"database":"up"`. In `ap
 | Free vs Pro rows, prices switch | `apps/web/src/config/pricing.config.ts` |
 | Waitlist, email wording | `apps/api/src/services/` |
 
+## Updating Next.js
+If the dev screen shows "Next.js ... (outdated)", get the newest patch of the supported 15.x line (this project is tested against 15; version 16 changes some behaviour and has not been tested here):
+```
+npm --prefix apps/web install next@15 react@19 react-dom@19 eslint-config-next@15
+npm --prefix apps/web audit
+```
+
 ## Honest status
 Read `docs/TESTING.md`. In short: all logic and pages were tested here (43 automated tests pass, every route checked at 4 widths), but `npm install`, the Next.js build, ESLint, `npm audit`, the live Express server, a real database and real email could not be run in my offline environment. If the first `npm run check` or `npm run dev:*` shows an error, send it to me and I'll fix it.

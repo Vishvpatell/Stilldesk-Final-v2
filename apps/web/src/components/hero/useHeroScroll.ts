@@ -22,19 +22,24 @@ export function useHeroScroll(stageRef: RefObject<HTMLElement | null>) {
   useEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
-    const q = <T extends Element>(s: string) => stage.querySelector(s) as T;
+    const find = <T extends Element>(s: string) => stage.querySelector<T>(s);
     const root = document.documentElement;
     const rm = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const pin = q<HTMLElement>(".pin"), scene = q<HTMLElement>(".scene"), dark = q<HTMLElement>("#dark");
-    const wall = q<HTMLElement>("#wall"), copy = q<HTMLElement>(".copy"), cue = q<HTMLElement>(".cue");
-    const lbl = q<HTMLElement>("#lbl"), labelWrap = lbl.parentElement as HTMLElement, pen = q<SVGGElement>("#pen");
-    const svgs = [q<SVGSVGElement>("#back"), q<SVGSVGElement>("#front")];
+    const pin = find<HTMLElement>(".pin"), scene = find<HTMLElement>(".scene"), dark = find<HTMLElement>("#dark");
+    const wall = find<HTMLElement>("#wall"), copy = find<HTMLElement>(".copy"), cue = find<HTMLElement>(".cue");
+    const lbl = find<HTMLElement>("#lbl"), pen = find<SVGGElement>("#pen"), dg = find<SVGGElement>("#dust");
+    const back = find<SVGSVGElement>("#back"), front = find<SVGSVGElement>("#front");
+    const labelWrap = lbl?.parentElement;
+    if (!pin || !scene || !dark || !wall || !copy || !cue || !lbl || !labelWrap || !pen || !dg || !back || !front) {
+      if (process.env.NODE_ENV !== "production") console.warn("[Stilldesk] The hero scene could not find one of its elements, so it is paused: check its markup.");
+      return;
+    }
+    const svgs = [back, front];
     const inks = Array.from(stage.querySelectorAll<SVGPathElement>(".ink"));
 
     // dust motes drifting through the beam (hidden entirely for reduced motion)
     const dust: { x: number; y: number; v: number; ph: number; el: SVGCircleElement }[] = [];
-    const dg = q<SVGGElement>("#dust");
     if (!rm) {
       const n = innerWidth <= 900 ? 14 : 30;
       for (let i = 0; i < n; i++) {
@@ -112,9 +117,10 @@ export function useHeroScroll(stageRef: RefObject<HTMLElement | null>) {
       lbl.textContent = l > 0.2 ? "Studying" : "Ready"; // the lamp always comes with words, never colour alone
     };
 
-    let raf = 0, prevT = performance.now(), visible = true;
+    let raf = 0, prevT = performance.now(), visible = true, alive = true;
     const tick = (t: number) => {
       raf = 0;
+      if (!alive || !stage.isConnected) return; // the hero was removed (page change): stop quietly
       if (!rm) {
         // time-based smoothing: same feel at 30, 60 or 120 fps, and it always settles exactly on the target
         const k = 1 - Math.exp(-Math.min(0.1, (t - prevT) / 1000) * 9);
@@ -145,6 +151,7 @@ export function useHeroScroll(stageRef: RefObject<HTMLElement | null>) {
     else raf = requestAnimationFrame(tick);
 
     return () => {
+      alive = false;
       cancelAnimationFrame(raf);
       io.disconnect();
       removeEventListener("scroll", wake);

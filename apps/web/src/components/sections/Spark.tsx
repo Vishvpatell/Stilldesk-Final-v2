@@ -1,6 +1,7 @@
 "use client";
 import { useRef } from "react";
 import { useScrub } from "@/hooks/useScrub";
+import { useSceneNodes } from "@/hooks/useSceneNodes";
 import { LampIcon } from "@/components/ui/LampIcon";
 
 /**
@@ -18,18 +19,17 @@ const ss = (a: number, b: number, x: number) => { x = clamp((x - a) / (b - a)); 
 
 export function Spark() {
   const ref = useRef<HTMLElement>(null);
-  const cache = useRef<{ path: SVGPathElement; point: SVGGElement; trail: SVGPathElement; len: number } | null>(null);
+  const getNodes = useSceneNodes((root) => {
+    const path = root.querySelector<SVGPathElement>(".sp-path"), point = root.querySelector<SVGGElement>(".sp-point"), trail = root.querySelector<SVGPathElement>(".sp-trail");
+    return path && point && trail ? { path, point, trail, len: path.getTotalLength() } : null;
+  });
 
   useScrub(ref, {
     mode: "pin",
     smooth: 7, // a little slower and softer than other scenes
-    onUpdate: (p) => {
-      const el = ref.current!;
-      if (!cache.current) {
-        const path = el.querySelector<SVGPathElement>(".sp-path")!;
-        cache.current = { path, point: el.querySelector<SVGGElement>(".sp-point")!, trail: el.querySelector<SVGPathElement>(".sp-trail")!, len: path.getTotalLength() };
-      }
-      const c = cache.current;
+    onUpdate: (p, el) => {
+      const c = getNodes(el);
+      if (!c) return;
       const q = innerWidth > 900 ? p : clamp((p - 0.2) / 0.6); // phones: not pinned, so use the middle of the pass
       const travel = ss(0.1, 0.44, q);
       const pt = c.path.getPointAtLength(c.len * travel);

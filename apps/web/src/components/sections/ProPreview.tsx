@@ -1,6 +1,7 @@
 "use client";
 import { useRef } from "react";
 import { useScrub } from "@/hooks/useScrub";
+import { useSceneNodes } from "@/hooks/useSceneNodes";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 
 /**
@@ -19,15 +20,18 @@ const clamp = (x: number) => Math.max(0, Math.min(1, x));
 
 export function ProPreview() {
   const ref = useRef<HTMLElement>(null);
-  const cache = useRef<{ total: HTMLElement; sess: HTMLElement } | null>(null);
+  const getNodes = useSceneNodes((root) => {
+    const total = root.querySelector<HTMLElement>(".k-total"), sess = root.querySelector<HTMLElement>(".k-sess");
+    return total && sess ? { total, sess } : null;
+  });
   useScrub(ref, {
     mode: "pass",
-    onUpdate: (p) => {
-      const el = ref.current!;
-      if (!cache.current) cache.current = { total: el.querySelector<HTMLElement>(".k-total")!, sess: el.querySelector<HTMLElement>(".k-sess")! };
+    onUpdate: (p, el) => {
+      const c = getNodes(el);
+      if (!c) return;
       const t = clamp((p - 0.18) / 0.32);
-      cache.current.total.textContent = hm(Math.round(TOTAL * t));
-      cache.current.sess.textContent = String(Math.round(SESSIONS * t));
+      c.total.textContent = hm(Math.round(TOTAL * t));
+      c.sess.textContent = String(Math.round(SESSIONS * t));
     },
   });
 

@@ -1,6 +1,7 @@
 "use client";
 import { useRef } from "react";
 import { useScrub } from "@/hooks/useScrub";
+import { useSceneNodes } from "@/hooks/useSceneNodes";
 
 // Copy: docs/03, section 4. Each moment gets one small drawn state; the page behind it moves from day to night.
 const MOMENTS = [
@@ -23,14 +24,17 @@ function Glyph({ k }: { k: string }) {
 
 export function Day() {
   const ref = useRef<HTMLElement>(null);
-  const cache = useRef<{ cards: HTMLElement[]; rail: HTMLElement } | null>(null);
+  const getNodes = useSceneNodes((root) => {
+    const cards = Array.from(root.querySelectorAll<HTMLElement>(".moment")), rail = root.querySelector<HTMLElement>(".drail");
+    return cards.length === MOMENTS.length && rail ? { cards, rail } : null;
+  });
 
   useScrub(ref, {
     mode: "pass",
-    onUpdate: () => {
-      const el = ref.current!;
-      if (!cache.current) cache.current = { cards: Array.from(el.querySelectorAll<HTMLElement>(".moment")), rail: el.querySelector<HTMLElement>(".drail")! };
-      const { cards, rail } = cache.current, mid = innerHeight * 0.52;
+    onUpdate: (_p, el) => {
+      const nodes = getNodes(el);
+      if (!nodes) return;
+      const { cards, rail } = nodes, mid = innerHeight * 0.52;
       let best = 0, bd = 1e9;
       cards.forEach((c, i) => {
         const r = c.getBoundingClientRect(), d = Math.abs(r.top + r.height / 2 - mid);

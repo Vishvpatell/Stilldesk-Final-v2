@@ -1,6 +1,7 @@
 "use client";
 import { useRef } from "react";
 import { useScrub } from "@/hooks/useScrub";
+import { useSceneNodes } from "@/hooks/useSceneNodes";
 import { LampIcon } from "@/components/ui/LampIcon";
 
 // Copy: docs/03 section 7, shortened. The demo is a labelled example. Pinned on desktop only.
@@ -10,17 +11,22 @@ const clamp = (x: number) => Math.max(0, Math.min(1, x));
 
 export function Blocking() {
   const ref = useRef<HTMLElement>(null);
-  const last = useRef(-1);
+  const getNodes = useSceneNodes((root) => {
+    const steps = Array.from(root.querySelectorAll<HTMLElement>(".bstep")), screens = Array.from(root.querySelectorAll<HTMLElement>(".bscr"));
+    return steps.length === STEPS.length && screens.length === STEPS.length ? { steps, screens, last: -1 } : null;
+  });
   useScrub(ref, {
     mode: "pin",
-    onUpdate: (p) => {
-      const el = ref.current!, s = clamp((p - 0.05) / 0.9) * 5, act = Math.min(4, Math.floor(s));
+    onUpdate: (p, el) => {
+      const c = getNodes(el);
+      if (!c) return;
+      const s = clamp((p - 0.05) / 0.9) * 5, act = Math.min(4, Math.floor(s));
       el.style.setProperty("--b", s.toFixed(3));
       for (let i = 0; i < 5; i++) el.style.setProperty(`--u${i}`, clamp(s - i).toFixed(3));
-      if (last.current !== act) {
-        last.current = act;
-        el.querySelectorAll<HTMLElement>(".bstep").forEach((x, i) => { x.classList.toggle("on", i === act); x.classList.toggle("past", i < act); });
-        el.querySelectorAll<HTMLElement>(".bscr").forEach((x, i) => x.classList.toggle("on", i === act));
+      if (c.last !== act) {
+        c.last = act;
+        c.steps.forEach((x, i) => { x.classList.toggle("on", i === act); x.classList.toggle("past", i < act); });
+        c.screens.forEach((x, i) => x.classList.toggle("on", i === act));
       }
     },
   });
