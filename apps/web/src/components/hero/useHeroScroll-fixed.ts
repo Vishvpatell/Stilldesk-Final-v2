@@ -51,7 +51,9 @@ export function useHeroScroll(stageRef: RefObject<HTMLElement | null>) {
       }
     }
 
-    let port = false, last = "", target = rm ? 1 : 0, cur = target, sc = 1, pc: [number, number] = [0, 0];
+    let port = false, last = "";
+    const target = rm ? 1 : 0;
+    let cur = target, sc = 1, pc: [number, number] = [0, 0];
     const t0 = performance.now();
 
     const layout = () => {
